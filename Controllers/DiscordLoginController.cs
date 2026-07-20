@@ -48,8 +48,7 @@ namespace StudentHub.API.Controllers
             (string discordUserId, string discordUsername, string discordAvatarUrl)
                 = _loginHelper.UnpackDiscordUserInfo(result);
 
-            User? user = await _userService.GetUserByDiscordIdAsync(discordUserId);
-            if(user == null) user = await _userService.CreateOrUpdateUserAsync(discordUserId, discordUsername, discordAvatarUrl);
+            var user = await _userService.CreateOrUpdateUserAsync(discordUserId, discordUsername, discordAvatarUrl);
 
             var token = _jwtService.GenerateToken(user);
             await HttpContext.SignOutAsync("External");
