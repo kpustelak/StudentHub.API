@@ -21,8 +21,4 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.19.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Dtos\" />
-  </ItemGroup>
-
 </Project>

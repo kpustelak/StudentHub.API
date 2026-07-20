@@ -1,13 +1,31 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using StudentHub.API.Helpers;
+using StudentHub.API.Interface;
+using StudentHub.API.Models;
+using StudentHub.API.Models.Dtos;
+using StudentHub.API.Models.Entities;
+using System.ComponentModel;
+using System.Text;
 
-namespace StudentHub.API.Controllers
-{
+namespace StudentHub.API.Controllers 
+{ 
+
     [Route("api/[controller]")]
     [ApiController]
     public class DiscordLoginController : ControllerBase
     {
+        private readonly IJwtService _jwtService;
+        private readonly IUserService _userService;
+        private readonly LoginHelper _loginHelper;  
+        public DiscordLoginController(IJwtService jwtService, IUserService userService, LoginHelper loginHelper)
+        {
+            _jwtService = jwtService;
+            _userService = userService;
+            _loginHelper = loginHelper;
+        }
+
         [HttpGet("login")]
         public IActionResult Login()
         {
@@ -20,23 +38,27 @@ namespace StudentHub.API.Controllers
 
 
         [HttpGet("callback")]
-        public async Task<IActionResult> Callback()
+        [Description("Callback endpoint for Discord login. " +
+        "Creating or updating a user based on Discord information.")]
+        public async Task<ActionResult<ResponseModel<AuthResponseDto>>> Callback()
         {
             var result = await HttpContext.AuthenticateAsync("External");
-            if (!result.Succeeded)
+            if (!result.Succeeded || result is null) return BadRequest("External authentication failed.");
+
+            (string discordUserId, string discordUsername, string discordAvatarUrl)
+                = _loginHelper.UnpackDiscordUserInfo(result);
+
+            User? user = await _userService.GetUserByDiscordIdAsync(discordUserId);
+            if(user == null) user = await _userService.CreateOrUpdateUserAsync(discordUserId, discordUsername, discordAvatarUrl);
+
+            var token = _jwtService.GenerateToken(user);
+            await HttpContext.SignOutAsync("External");
+            return Ok(new ResponseModel<AuthResponseDto>
             {
-                return BadRequest("External authentication failed.");
-            }
-            var discordUserId = result.Principal.FindFirst("urn:discord:id")?.Value;
-            var discordUsername = result.Principal.FindFirst("urn:discord:username")?.Value;
-            var discordAvatarUrl = result.Principal.FindFirst("urn:discord:avatar:url")?.Value;
-            return Ok(new
-            {
-                Id = discordUserId,
-                Username = discordUsername,
-                AvatarUrl = discordAvatarUrl
+                Data = new AuthResponseDto(new UserDto(user.Id, user.DiscordId, user.Username, user.AvatarUrl), token),
+                Message = "User authenticated successfully.",
+                Status = true
             });
         }
-
     }
 }
