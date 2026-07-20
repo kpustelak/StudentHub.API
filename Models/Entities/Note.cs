@@ -9,6 +9,7 @@
         public bool IsReported { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+        public int ViewCount { get; set; }
 
         public IList<User> Contributors { get; set; } = [];
         public IList<StudentGroup> StudentGroups { get; set; } = [];

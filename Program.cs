@@ -9,6 +9,7 @@ using StudentHub.API.Interface;
 using StudentHub.API.Service;
 using StudentHub.API.Repositories;
 using StudentHub.API.Helpers;
+using StudentHub.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<LoginHelper>();
 
 builder.Services.AddAuthentication(options =>
