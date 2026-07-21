@@ -22,16 +22,17 @@ namespace StudentHub.API.Repositories
             await _db.SaveChangesAsync();
             return semester;
         }
-
         public async Task<Semester> CreateSemesterAsync(Semester semester)
         {
             await _db.Semesters.AddAsync(semester);
             await _db.SaveChangesAsync();
             return semester;
         }
-
-        public void DeleteSemester(Semester semester) => _db.Semesters.Remove(semester);
-
+        public async Task DeleteSemesterAsync(Semester semester)
+        {
+            _db.Semesters.Remove(semester);
+            await _db.SaveChangesAsync();
+        }
         public async Task DeleteUserFromSemester(User user, Semester semester)
         {
             semester.Students.Remove(user);
@@ -40,8 +41,14 @@ namespace StudentHub.API.Repositories
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
         }
+        public Task<Semester?> GetSemesterByIdAsync(string semesterId) {
+            return _db.Semesters.Include(x => x.Students).FirstOrDefaultAsync(x => x.Id == semesterId);
+        }
 
-        public Task<Semester?> GetSemesterByIdAsync(string semesterId) => _db.Semesters.FirstOrDefaultAsync(x => x.Id == semesterId);
+        public async Task<List<Semester>> GetSemestersAsync()
+        {
+            return await _db.Semesters.ToListAsync();
+        }
 
         public async Task<Semester> UpdateSemesterAsync(Semester semester)
         {

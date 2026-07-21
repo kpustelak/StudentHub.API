@@ -27,12 +27,12 @@ namespace StudentHub.API.Repositories
 
         public async Task<User?> GetUserByDiscordIdAsync(string discordId)
         {
-            return await _db.Users.FirstOrDefaultAsync(u => u.DiscordId == discordId);
+            return await _db.Users.Include(u => u.Semesters).FirstOrDefaultAsync(u => u.DiscordId == discordId);
         }
 
         public async Task<User?> GetUserByIdAsync(string userId)
         {
-            return await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return await _db.Users.Include(u => u.Semesters).FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> UpdateUserAsync(User newUser)

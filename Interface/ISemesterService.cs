@@ -6,6 +6,7 @@ namespace StudentHub.API.Interface
     public interface ISemesterService
     {
         public Task<Semester> GetSemesterByIdAsync(string id);
+        public Task<List<Semester>> GetSemestersAsync();
         public Task<Semester> CreateSemesterAsync(AddSemesterDto dto);
         public Task<Semester> UpdateSemesterAsync(Semester dto, string id);
         public Task DeleteSemesterAsync(string id);

@@ -30,9 +30,7 @@ namespace StudentHub.API.Services
 
         public async Task<Semester> CreateSemesterAsync(AddSemesterDto dto)
         {
-            try
-            {
-                var semester = await _repository.CreateSemesterAsync(new Semester
+            var semester = await _repository.CreateSemesterAsync(new Semester
                 {
                     Id = Guid.NewGuid().ToString(),
                     StartDate = dto.StartDate,
@@ -42,18 +40,13 @@ namespace StudentHub.API.Services
                     Title = dto.Title
                 });
                 return semester;
-            }
-            catch (Exception ex) 
-            {
-                throw new Exception(ex.Message, ex.InnerException);
-            }
         }
 
         public async Task DeleteSemesterAsync(string id)
         {
             var semester = await _repository.GetSemesterByIdAsync(id);
             ArgumentNullException.ThrowIfNull(semester);
-            _repository.DeleteSemester(semester);
+            await _repository.DeleteSemesterAsync(semester);
         }
 
         public async Task DeleteUserFromSemester(string userId, string semesterId)
@@ -72,13 +65,18 @@ namespace StudentHub.API.Services
 
         }
 
+        public async Task<List<Semester>> GetSemestersAsync()
+        {
+            return await _repository.GetSemestersAsync();
+        }
+
         public async Task<Semester> UpdateSemesterAsync(Semester dto, string id)
         {
             var semester = await _repository.GetSemesterByIdAsync(id);
             ArgumentNullException.ThrowIfNull(semester);
             return await _repository.UpdateSemesterAsync(new Semester
                 {
-                    Id = dto.Id,
+                    Id = id,
                     StartDate = dto.StartDate,
                     EndDate = dto.EndDate,
                     ShortTitle = dto.ShortTitle,
