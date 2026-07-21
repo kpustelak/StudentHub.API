@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentHub.API.Context;
 
@@ -10,9 +11,11 @@ using StudentHub.API.Context;
 namespace StudentHub.API.Migrations
 {
     [DbContext(typeof(StudentHubDbContext))]
-    partial class StudentHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721103909_Notes")]
+    partial class Notes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");

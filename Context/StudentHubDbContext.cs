@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StudentHub.API.Models.Entities;
 
 namespace StudentHub.API.Context
@@ -10,6 +9,7 @@ namespace StudentHub.API.Context
         public DbSet<Note> Notes => Set<Note>();
         public DbSet<Semester> Semesters => Set<Semester>();
         public DbSet<StudentGroup> StudentGroups => Set<StudentGroup>();
+        public DbSet<Models.Entities.File> Files => Set<Models.Entities.File>();
 
         public StudentHubDbContext(DbContextOptions<StudentHubDbContext> options) : base(options)
         {
@@ -56,10 +56,10 @@ namespace StudentHub.API.Context
             {
                 entity.HasKey(x => x.Id);
 
-                entity.Property(x => x.FileUrls)
-                    .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>());
+                entity.HasMany(x => x.Files)
+                    .WithOne(x => x.Note)
+                    .HasForeignKey(x => x.NoteId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
