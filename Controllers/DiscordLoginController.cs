@@ -45,19 +45,38 @@ namespace StudentHub.API.Controllers
             var result = await HttpContext.AuthenticateAsync("External");
             if (!result.Succeeded || result is null) return BadRequest("External authentication failed.");
 
-            (string discordUserId, string discordUsername, string discordAvatarUrl)
-                = _loginHelper.UnpackDiscordUserInfo(result);
-
-            var user = await _userService.CreateOrUpdateUserAsync(discordUserId, discordUsername, discordAvatarUrl);
-
-            var token = _jwtService.GenerateToken(user);
-            await HttpContext.SignOutAsync("External");
-            return Ok(new ResponseModel<AuthResponseDto>
+            try
             {
-                Data = new AuthResponseDto(new UserDto(user.Id, user.DiscordId, user.Username, user.AvatarUrl), token),
-                Message = "User authenticated successfully.",
-                Status = true
-            });
+                (string discordUserId, string discordUsername, string discordAvatarUrl)
+                    = _loginHelper.UnpackDiscordUserInfo(result);
+
+                var user = await _userService.CreateOrUpdateUserAsync(discordUserId, discordUsername, discordAvatarUrl);
+
+                var token = _jwtService.GenerateToken(user);
+                await HttpContext.SignOutAsync("External");
+                return Ok(new ResponseModel<AuthResponseDto>
+                {
+                    Data = new AuthResponseDto(new UserDto(user.Id, user.DiscordId, user.Username, user.AvatarUrl, null), token),
+                    Message = "User authenticated successfully.",
+                    Status = true
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel<AuthResponseDto>
+                {
+                    Status = false,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel<AuthResponseDto>
+                {
+                    Status = false,
+                    Message = ex.Message
+                });
+            }
         }
     }
 }
