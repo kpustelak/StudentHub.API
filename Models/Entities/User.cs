@@ -10,5 +10,6 @@
         public IList<Semester> Semesters { get; set; } = [];
         public IList<StudentGroup> StudentGroups { get; set; } = [];
         public IList<Note> Notes { get; set; } = [];
+        public IList<Message> Messages { get; set; } = [];
     }
 }

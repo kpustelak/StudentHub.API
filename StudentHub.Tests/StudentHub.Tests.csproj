@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StudentHub.API\StudentHub.API.csproj" />
+    <ProjectReference Include="..\StudentHub.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

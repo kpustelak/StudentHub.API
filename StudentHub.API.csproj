@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="StudentHub.Tests/**" />
+    <Content Remove="StudentHub.Tests/**" />
+    <EmbeddedResource Remove="StudentHub.Tests/**" />
+    <None Remove="StudentHub.Tests/**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />
     <PackageReference Include="dotenv.net" Version="4.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
