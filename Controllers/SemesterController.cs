@@ -107,7 +107,7 @@ namespace StudentHub.API.Controllers
         }
 
         [HttpPost("join/{semesterId}")]
-        public async Task<ActionResult<ResponseModel<Semester>>> JoinSemester(string semesterId)
+        public async Task<ActionResult<ResponseModel<EmptyResult>>> JoinSemester(string semesterId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?.ToString();
@@ -116,17 +116,16 @@ namespace StudentHub.API.Controllers
             {
                 ArgumentException.ThrowIfNullOrEmpty(semesterId);
                 ArgumentException.ThrowIfNullOrEmpty(userId);
-                var semester = await _semesterService.AddUserToSemester(userId, semesterId);
-                return Ok(new ResponseModel<Semester>
+                await _semesterService.AddUserToSemester(userId, semesterId);
+                return Ok(new ResponseModel<EmptyResult>
                 {
                     Status = true,
-                    Message = "User joined semester successfully.",
-                    Data = semester
+                    Message = "User joined semester successfully."
                 });
             }
             catch (ArgumentException ex)
             {
-                return NotFound(new ResponseModel<Semester>
+                return NotFound(new ResponseModel<EmptyResult>
                 {
                     Status = false,
                     Message = ex.Message
@@ -134,7 +133,7 @@ namespace StudentHub.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new ResponseModel<Semester>
+                return BadRequest(new ResponseModel<EmptyResult>
                 {
                     Status = false,
                     Message = ex.Message

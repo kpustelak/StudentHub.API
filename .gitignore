@@ -55,3 +55,10 @@ nunit-*.xml
 
 # env
 .env
+
+#tests
+*.db
+*.db-shm
+*.db-wal
+wwwroot/uploads/**
+!wwwroot/uploads/.gitkeep
