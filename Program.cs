@@ -10,6 +10,7 @@ using StudentHub.API.Service;
 using StudentHub.API.Repositories;
 using StudentHub.API.Helpers;
 using StudentHub.API.Services;
+using StudentHub.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,7 @@ builder.Services.AddSqlite<StudentHubDbContext>(builder.Configuration.GetConnect
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-
+// Add services
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -34,8 +35,25 @@ builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<LoginHelper>();
 
+builder.Services.AddSignalR();
+
+//CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ChatClient", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+    });
+});
+
+// Configure authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,6 +79,20 @@ builder.Services.AddAuthentication(options =>
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(token) && context.Request.Path.StartsWithSegments("/chat"))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     })
     .AddDiscord(options =>
@@ -91,11 +123,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// SignalR hub mapping
 
 app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors("ChatClient");
+app.MapHub<ChatHub>("/chat");
 
 app.MapControllers();
 

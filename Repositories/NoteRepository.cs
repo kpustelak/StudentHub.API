@@ -40,13 +40,6 @@ namespace StudentHub.API.Repositories
                 .ToListAsync();
         }
 
-        public Task<StudentGroup?> GetStudentGroupByIdAsync(string groupId)
-        {
-            return _db.StudentGroups
-                .Include(g => g.Members)
-                .FirstOrDefaultAsync(g => g.Id == groupId);
-        }
-
         public async Task<Note> UpdateNoteAsync(Note note)
         {
             _db.Notes.Update(note);
