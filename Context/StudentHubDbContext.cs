@@ -9,6 +9,7 @@ namespace StudentHub.API.Context
         public DbSet<Note> Notes => Set<Note>();
         public DbSet<Semester> Semesters => Set<Semester>();
         public DbSet<StudentGroup> StudentGroups => Set<StudentGroup>();
+        public DbSet<Message> Messages => Set<Message>();
         public DbSet<Models.Entities.File> Files => Set<Models.Entities.File>();
 
         public StudentHubDbContext(DbContextOptions<StudentHubDbContext> options) : base(options)
@@ -32,6 +33,9 @@ namespace StudentHub.API.Context
 
                 entity.HasMany(x => x.StudentGroups)
                     .WithMany(x => x.Members);
+
+                entity.HasMany(x => x.Messages)
+                    .WithOne(x => x.Student);
             });
 
             modelBuilder.Entity<Semester>(entity =>
@@ -59,6 +63,21 @@ namespace StudentHub.API.Context
                 entity.HasMany(x => x.Files)
                     .WithOne(x => x.Note)
                     .HasForeignKey(x => x.NoteId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.HasOne(x => x.StudentGroup)
+                    .WithMany(x => x.Messages)
+                    .HasForeignKey(x => x.StudentGroupId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Student)
+                    .WithMany(x => x.Messages)
+                    .HasForeignKey(x => x.StudentId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }

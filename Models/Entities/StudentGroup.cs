@@ -11,5 +11,6 @@
 
         public IList<User> Members { get; set; } = [];
         public IList<Note> Notes { get; set; } = [];
+        public IList<Message> Messages { get; set; } = [];
     }
 }
