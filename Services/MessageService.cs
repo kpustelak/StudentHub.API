@@ -45,7 +45,7 @@ namespace StudentHub.API.Services
             }).ToList();
         }
 
-        public async Task<Message> SendAsync(AddMessageDto dto, string userId)
+        public async Task<MessageDto> SendAsync(AddMessageDto dto, string userId)
         {
             await _groupAccessService.EnsureMemberAsync(dto.StudentGroupId, userId);
             var message = new Message
@@ -57,7 +57,15 @@ namespace StudentHub.API.Services
                 StudentGroupId = dto.StudentGroupId
             };
             await _repository.AddMessageAsync(message);
-            return message;
+
+            var saved = await _repository.GetMessageAsync(message.Id);
+            return new MessageDto
+            {
+                Id = saved!.Id,
+                Content = saved.Content,
+                CreatedAt = saved.CreatedAt,
+                UserName = saved.Student?.Username ?? string.Empty
+            };
         }
     }
 }
