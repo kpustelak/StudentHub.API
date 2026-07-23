@@ -29,15 +29,23 @@ namespace StudentHub.API.Controllers
             try
             {
                 var userFromDb = await _userService.GetUserByIdAsync(userId);
-                var us = new UserDto(userId, userFromDb.DiscordId, userFromDb.Username, userFromDb.AvatarUrl, new List<SemesterDto>());
-                us.SemestersDto.AddRange(userFromDb.Semesters.Select(s => new SemesterDto
-                    (
+                var us = new UserDto(
+                    userId,
+                    userFromDb.DiscordId,
+                    userFromDb.Username,
+                    userFromDb.AvatarUrl,
+                    userFromDb.Semesters.Select(s => new SemesterDto(
                         s.Id,
                         s.Title,
                         s.ShortTitle,
                         s.Description,
                         s.StartDate,
                         s.EndDate
+                    )).ToList(),
+                    userFromDb.StudentGroups.Select(g => new StudentGroupDto(
+                        g.Id,
+                        g.Name,
+                        g.Description
                     )).ToList());
 
                 return Ok(new ResponseModel<UserDto>

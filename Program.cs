@@ -39,6 +39,7 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IGroupAccessService, GroupAccessService>();
 builder.Services.AddScoped<IStudentGroupRepository, StudentGroupRepository>();
+builder.Services.AddScoped<IStudentGroupService, StudentGroupService>();
 builder.Services.AddScoped<LoginHelper>();
 
 builder.Services.AddSignalR();

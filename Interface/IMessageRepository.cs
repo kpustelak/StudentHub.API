@@ -1,13 +1,12 @@
-﻿using StudentHub.API.Migrations;
+﻿using StudentHub.API.Models.Entities;
 
 namespace StudentHub.API.Interface
 {
     public interface IMessageRepository
     {
-        public Task AddMessageAsync(Models.Entities.Message message);
-        public Task DeleteMessageAsync(Models.Entities.Message message);
-        public Task<Models.Entities.Message?> GetMessageAsync(string id);
-        public Task<List<Models.Entities.Message>> GetMessagesWithPagingAsync(string groupId,int page, int pageSize);
-
+        Task AddMessageAsync(Message message);
+        Task DeleteMessageAsync(Message message);
+        Task<Message?> GetMessageAsync(string id);
+        Task<List<Message>> GetMessagesWithPagingAsync(string groupId, int page, int pageSize);
     }
 }

@@ -32,7 +32,10 @@ namespace StudentHub.API.Repositories
 
         public async Task<User?> GetUserByIdAsync(string userId)
         {
-            return await _db.Users.Include(u => u.Semesters).FirstOrDefaultAsync(u => u.Id == userId);
+            return await _db.Users
+                .Include(u => u.Semesters)
+                .Include(u => u.StudentGroups)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> UpdateUserAsync(User newUser)
