@@ -11,7 +11,7 @@ namespace StudentHub.API.Services
         }
         public async Task EnsureMemberAsync(string groupId, string userId)
         {
-            var group = await _groups.GetByIdWithMembersAsync(groupId)
+            var group = await _groups.GetByIdAsync(groupId)
                 ?? throw new ArgumentException("Student group not found.");
             if (group.Members.All(m => m.Id != userId))
             {

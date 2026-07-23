@@ -16,33 +16,33 @@ namespace StudentHub.API.Services
 
         private readonly INoteRepository _noteRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IStudentGroupRepository _helperRepository;
+        private readonly IStudentGroupRepository _studentGroupRepository;
+        private readonly IGroupAccessService _groupAccessService;
         private readonly IWebHostEnvironment _environment;
 
         public NoteService(
             INoteRepository noteRepository,
             IUserRepository userRepository,
             IWebHostEnvironment environment,
-            IStudentGroupRepository helperRepository)
+            IStudentGroupRepository studentGroupRepository,
+            IGroupAccessService groupAccessService)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
             _environment = environment;
-            _helperRepository = helperRepository;
+            _studentGroupRepository = studentGroupRepository;
+            _groupAccessService = groupAccessService;
         }
 
         public async Task<NoteDto> CreateNoteAsync(AddNoteDto dto, string userId)
         {
-            var group = await _helperRepository.GetByIdWithMembersAsync(dto.StudentGroupId)
+            await _groupAccessService.EnsureMemberAsync(dto.StudentGroupId, userId);
+
+            var group = await _studentGroupRepository.GetByIdAsync(dto.StudentGroupId)
                 ?? throw new ArgumentException("Student group not found.");
 
             var user = await _userRepository.GetUserByIdAsync(userId)
                 ?? throw new ArgumentException("User not found.");
-
-            if (group.Members.All(m => m.Id != userId))
-            {
-                throw new InvalidOperationException("User is not a member of this group.");
-            }
 
             var note = new Note
             {
